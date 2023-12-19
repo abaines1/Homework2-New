@@ -5,6 +5,7 @@ ItemID INTEGER PRIMARY KEY AUTOINCREMENT,
 ItemName TEXT, 
 ItemCategory TEXT,
 ItemCost FLOAT,
+ItemQuantity INTEGER, 
 ManufacturerID INTEGER,
 FOREIGN KEY (ManufacturerID) REFERENCES Manufacturer(ManufacturerID)
 );
@@ -43,6 +44,11 @@ EmployeePhone INTEGER,
 EmployeeUserName TEXT
 );
 '''
+
+INSERT_NEW_ITEM = ''' INSERT INTO Inventory (ItemName, ItemCategory, ItemCost, ItemQuantity)
+VALUES (?, ?, ?, ?);
+'''
+
 connection = _sqlite3.connect('Hardware.db')
 
 
@@ -53,3 +59,8 @@ def create_tables():
         connection.execute(CREATE_ORDER_TABLE)
         connection.execute(CREATE_EMPLOYEES_TABLE)
         connection.execute(CREATE_DELIVERY)
+
+
+def add_item(ItemName, ItemCategory, ItemCost, ItemQuantity):
+    with connection:
+        connection.execute(INSERT_NEW_ITEM, (ItemName, ItemCategory, ItemCost, ItemQuantity))
