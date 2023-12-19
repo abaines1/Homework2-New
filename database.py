@@ -48,6 +48,15 @@ EmployeeUserName TEXT
 INSERT_NEW_ITEM = ''' INSERT INTO Inventory (ItemName, ItemCategory, ItemCost, ItemQuantity)
 VALUES (?, ?, ?, ?);
 '''
+ADD_EMPLOYEE = ''' INSERT INTO Employees (EmployeeFirstName, EmployeeLastName, EmployeePhone, EmployeeUserName)
+VALUES (?, ?, ?, ?);
+'''
+
+REMOVE_EMPLOYEE = ''' DELETE FROM Employees WHERE EmployeeID = (?); '''
+
+REMOVE_ITEM = ''' DELETE FROM Inventory 
+WHERE ItemID = (?)
+'''
 
 connection = _sqlite3.connect('Hardware.db')
 
@@ -64,3 +73,17 @@ def create_tables():
 def add_item(ItemName, ItemCategory, ItemCost, ItemQuantity):
     with connection:
         connection.execute(INSERT_NEW_ITEM, (ItemName, ItemCategory, ItemCost, ItemQuantity))
+
+
+def add_employee(EmpFirstName, EmpLastName, EmpPhone, EmpUserName):
+    with connection:
+        connection.execute(ADD_EMPLOYEE, (EmpFirstName, EmpLastName, EmpPhone, EmpUserName))
+
+
+def remove_item(ItemID):
+    with connection:
+        connection.execute(REMOVE_ITEM, ItemID)
+
+def remove_employee(EmployeeID):
+    with connection:
+        connection.execute(REMOVE_EMPLOYEE, EmployeeID)
