@@ -77,11 +77,7 @@ SQLite Version - Inventory System - 12/18/2023
         - EmployeeLastName
         - EmployeePhoneNumber
         - EmployeeUserName
-    
-    EmployeesManufacturer:
-        - EmployeeManufacturerID(PK)
-        - EmployeeID(FK)
-        - ManufacturerID(FK)
+
 
 
 ### Menu Design 
@@ -109,3 +105,6 @@ What would you like to do?
 
 
 ### Software Design Processes
+
+1) Build Menu
+2) 
