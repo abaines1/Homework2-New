@@ -45,19 +45,31 @@ EmployeeUserName TEXT
 );
 '''
 
-INSERT_NEW_ITEM = ''' INSERT INTO Inventory (ItemName, ItemCategory, ItemCost, ItemQuantity)
-VALUES (?, ?, ?, ?);
+INSERT_NEW_ITEM = ''' INSERT INTO Inventory (ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID)
+VALUES (?, ?, ?, ?, ?);
 '''
 ADD_EMPLOYEE = ''' INSERT INTO Employees (EmployeeFirstName, EmployeeLastName, EmployeePhone, EmployeeUserName)
 VALUES (?, ?, ?, ?);
 '''
 
 REMOVE_EMPLOYEE = ''' DELETE FROM Employees WHERE EmployeeID = (?); '''
-
 REMOVE_ITEM = ''' DELETE FROM Inventory 
-WHERE ItemID = (?)
+WHERE ItemID = (?);
 '''
 
+UPDATE_ITEM_STOCK = ''' UPDATE Inventory 
+SET ItemQuantity = ? 
+WHERE ItemID = ?
+'''
+
+VIEW_INVENTORY = ''' SELECT * FROM Inventory;
+'''
+VIEW_IN_STOCK = ''' SELECT * FROM Inventory 
+WHERE ItemQuantity > 0
+'''
+VIEW_OUT_STOCK = ''' SELECT * FROM Inventory 
+WHERE ItemQuantity = 0
+'''
 connection = _sqlite3.connect('Hardware.db')
 
 
@@ -70,9 +82,9 @@ def create_tables():
         connection.execute(CREATE_DELIVERY)
 
 
-def add_item(ItemName, ItemCategory, ItemCost, ItemQuantity):
+def add_item(ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID):
     with connection:
-        connection.execute(INSERT_NEW_ITEM, (ItemName, ItemCategory, ItemCost, ItemQuantity))
+        connection.execute(INSERT_NEW_ITEM, (ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID))
 
 
 def add_employee(EmpFirstName, EmpLastName, EmpPhone, EmpUserName):
@@ -84,6 +96,33 @@ def remove_item(ItemID):
     with connection:
         connection.execute(REMOVE_ITEM, ItemID)
 
+
 def remove_employee(EmployeeID):
     with connection:
         connection.execute(REMOVE_EMPLOYEE, EmployeeID)
+
+
+def updateItemStock(quantity, _id):
+    with connection:
+        connection.execute(UPDATE_ITEM_STOCK, (quantity, _id))
+
+
+def viewInventory():
+    cursor = connection.cursor()
+    cursor.execute(VIEW_INVENTORY)
+
+    return cursor.fetchall()
+
+
+def viewInStock():
+    cursor = connection.cursor()
+    cursor.execute(VIEW_IN_STOCK)
+
+    return cursor.fetchall()
+
+
+def viewOutOfStock():
+    cursor = connection.cursor()
+    cursor.execute(VIEW_OUT_STOCK)
+
+    return cursor.fetchall()
