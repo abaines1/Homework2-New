@@ -51,10 +51,14 @@ VALUES (?, ?, ?, ?, ?);
 ADD_EMPLOYEE = ''' INSERT INTO Employees (EmployeeFirstName, EmployeeLastName, EmployeePhone, EmployeeUserName)
 VALUES (?, ?, ?, ?);
 '''
+ADD_MANUFACTURER = ''' INSERT INTO Manufacturer (ManufacturerName, ManufacturerAddress, DayOfDelivery) VALUES (?, ?, ?)
+'''
 
 REMOVE_EMPLOYEE = ''' DELETE FROM Employees WHERE EmployeeID = (?); '''
 REMOVE_ITEM = ''' DELETE FROM Inventory 
 WHERE ItemID = (?);
+'''
+REMOVE_MANUFACTURER = ''' DELETE FROM Manufacturer WHERE ManufacturerID = (?);
 '''
 
 UPDATE_ITEM_STOCK = ''' UPDATE Inventory 
@@ -62,7 +66,11 @@ SET ItemQuantity = ?
 WHERE ItemID = ?
 '''
 
-VIEW_INVENTORY = ''' SELECT * FROM Inventory;
+VIEW_INVENTORY = ''' SELECT I.ItemName, I.ItemCategory, I.ItemCost, I.ItemQuantity, I.ManufacturerID, 
+M.ManufacturerName, M.ManufacturerAddress, M.DayOfDelivery
+FROM Inventory AS I
+JOIN Manufacturer as M
+ON I.ManufacturerID = M.ManufacturerID
 '''
 VIEW_IN_STOCK = ''' SELECT * FROM Inventory 
 WHERE ItemQuantity > 0
@@ -70,6 +78,19 @@ WHERE ItemQuantity > 0
 VIEW_OUT_STOCK = ''' SELECT * FROM Inventory 
 WHERE ItemQuantity = 0
 '''
+VIEW_MANUFACTURERS = ''' SELECT * FROM Manufacturer;
+'''
+
+SEARCH_MENU_NAME = ''' SELECT *
+FROM Inventory
+WHERE ItemName = (?)
+'''
+
+SEARCH_BY_CATEGORY = ''' SELECT *
+FROM Inventory 
+WHERE ItemCategory = (?)
+'''
+
 connection = _sqlite3.connect('Hardware.db')
 
 
@@ -90,6 +111,11 @@ def add_item(ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID):
 def add_employee(EmpFirstName, EmpLastName, EmpPhone, EmpUserName):
     with connection:
         connection.execute(ADD_EMPLOYEE, (EmpFirstName, EmpLastName, EmpPhone, EmpUserName))
+
+
+def add_manufacture(ManufacturerName, ManufacturerAddress, DayOfDelivery):
+    with connection:
+        connection.execute(ADD_MANUFACTURER, (ManufacturerName, ManufacturerAddress, DayOfDelivery))
 
 
 def remove_item(ItemID):
@@ -124,5 +150,31 @@ def viewInStock():
 def viewOutOfStock():
     cursor = connection.cursor()
     cursor.execute(VIEW_OUT_STOCK)
+
+    return cursor.fetchall()
+
+
+def viewManufacturers():
+    cursor = connection.cursor()
+    cursor.execute(VIEW_MANUFACTURERS)
+
+    return cursor.fetchall()
+
+
+def removeManufacturer(removeId):
+    with connection:
+        connection.execute(REMOVE_MANUFACTURER, removeId)
+
+
+def searchByName(ItemName):
+    cursor = connection.cursor()
+    cursor.execute(SEARCH_MENU_NAME, (ItemName,))
+
+    return cursor.fetchall()
+
+
+def searchByCategory(ItemCategory):
+    cursor = connection.cursor()
+    cursor.execute(SEARCH_BY_CATEGORY, (ItemCategory, ))
 
     return cursor.fetchall()

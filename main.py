@@ -5,7 +5,9 @@ menu_prompt = """ --- Menu ---
 2) Search Inventory
 3) Update Inventory
 4) Employee Information
-5) Exit.
+5) Manufacture Information
+6) Delivery Information
+7) Exit.
 
 """
 
@@ -15,7 +17,7 @@ def prompt_add_item():
     ItemCategory = input('Under what category does this item fall under? ')
     ItemCost = int(input('What does each of the items cost? (per item) '))
     ItemQuantity = int(input('How many of this item are we adding? '))
-    ManufacturerID = int(input('What is the Manufacturer ID of the item? '))
+    ManufacturerID = int(input('What is the ManufacturerID for the item? '))
 
     database.add_item(ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID)
 
@@ -89,11 +91,76 @@ def inventory_menu():
             print('Error: Please input 4 to go back! ')
 
 
+def manufacturer_menu():
+    menu = """ --- Manufacture Information Menu ---
+    1) Add Manufacturer
+    2) Remove Manufacturer
+    3) View Manufacturers 
+    4) Go Back
+    
+    """
+
+    while (user_input := input(menu)) != "4":
+        if user_input == "1":
+            add_manufacturer_menu()
+        elif user_input == "2":
+            removeId = input("What is the ID of the Manufacturer you would like to remove?")
+            database.removeManufacturer(removeId)
+        elif user_input == "3":
+            listManufacturers()
+        else:
+            print('Error: Please input 4 to go back! ')
+
+
+def add_manufacturer_menu():
+    ManufacturerName = input("What is the name of the Manufacturer? ")
+    ManufacturerAddress = input("What is the address for the Manufacturer? ")
+    DayOfDelivery = input("What is the day this Manufacturer delivers? ")
+
+    database.add_manufacture(ManufacturerName, ManufacturerAddress, DayOfDelivery)
+
+
+def search_menu():
+    menu = """ --- Search --- 
+    1) Search By Name
+    2) Search By Category
+    3) Go Back
+    """
+    while (user_input := input(menu)) != "4":
+        if user_input == "1":
+            searchName = database.searchByName(input('What is the name of the item you are searching for? '))
+
+            for _id, ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID in searchName:
+                print(f" ID: {_id} ||| Name: {ItemName} ||| Category: {ItemCategory} ||| "
+                      f"Cost: {ItemCost} ||| Quantity: {ItemQuantity} ||| ManuID: {ManufacturerID} ")
+
+        elif user_input == "2":
+            searchCategory = database.searchByCategory(input('What is the category of item you are looking for? '))
+
+            for _id, ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID in searchCategory:
+                print(f" ID: {_id} ||| Name: {ItemName} ||| Category: {ItemCategory} ||| "
+                      f"Cost: {ItemCost} ||| Quantity: {ItemQuantity} ||| ManuID: {ManufacturerID} ")
+
+        elif user_input == "3":
+            pass
+        else:
+            print('Error: Please input 4 to go back! ')
+
+
+def listManufacturers():
+    manufacturers = database.viewManufacturers()
+
+    for _id, ManufacturerName, ManufacturerAddress, DayOfDelivery in manufacturers:
+        print(f" --- Manufacturers --- "
+              f"ID: {_id} ||| Name: {ManufacturerName} ||| Address: {ManufacturerAddress} ||| Day of Deliveries: {DayOfDelivery}")
+
+
 def listTotalInventory():
     inventory = database.viewInventory()
-    for _id, ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID in inventory:
-        print(
-            f"Item: {ItemName} ||| Category: {ItemCategory} ||| Cost: {ItemCost} ||| Quantity: {ItemQuantity} ||| ManufacturerID: {ManufacturerID} \n")
+
+    for ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID, ManufacturerName, ManufacturerAddress, DayOfDelivery in inventory:
+        print(f"Item: {ItemName} ||| Category: {ItemCategory} ||| {ItemCost} Quantity: {ItemQuantity} "
+              f"ManID: {ManufacturerID} ||| ManufacturerName: {ManufacturerName} ||| ManuAddress: {ManufacturerAddress} ||| Day of Delivery: {DayOfDelivery}")
 
 
 def listInStockInventory():
@@ -122,10 +189,12 @@ if __name__ == "__main__":
         if user_input == "1":
             inventory_menu()
         elif user_input == "2":
-            print(user_input)
+            search_menu()
         elif user_input == "3":
             prompt_update_inventory()
         elif user_input == "4":
             prompt_employee_menu()
+        elif user_input == "5":
+            manufacturer_menu()
         else:
             print("Invalid Input. Try Again")
