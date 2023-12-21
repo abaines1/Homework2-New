@@ -7,7 +7,8 @@ menu_prompt = """ --- Menu ---
 4) Employee Information
 5) Manufacture Information
 6) Delivery Information
-7) Exit.
+7) Order Menu 
+8) Exit.
 
 """
 
@@ -129,20 +130,91 @@ def search_menu():
     while (user_input := input(menu)) != "4":
         if user_input == "1":
             searchName = database.searchByName(input('What is the name of the item you are searching for? '))
+            print(searchName)
 
-            for _id, ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID in searchName:
-                print(f" ID: {_id} ||| Name: {ItemName} ||| Category: {ItemCategory} ||| "
-                      f"Cost: {ItemCost} ||| Quantity: {ItemQuantity} ||| ManuID: {ManufacturerID} ")
+            if searchName:
+                for _id, ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID in searchName:
+                    if ItemQuantity != 0:
+                        print(f" ID: {_id} ||| Name: {ItemName} ||| Category: {ItemCategory} ||| "
+                              f"Cost: {ItemCost} ||| Quantity: {ItemQuantity} ||| ManuID: {ManufacturerID} ")
+                    else:
+                        getDeliveryDay = database.getNextDeliveryDate(ManufacturerID)
+                        print(f"Oh no! It looks like Item {ItemName} is Out of Stock. \n"
+                              f"Looks like {ItemName} will be delivered to us on {getDeliveryDay}")
+            elif not searchName:
+                print("Oh no! It looks like we couldn't find that item. Try searching something else!")
+            else:
+                print("Error! Try again")
 
         elif user_input == "2":
             searchCategory = database.searchByCategory(input('What is the category of item you are looking for? '))
 
-            for _id, ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID in searchCategory:
-                print(f" ID: {_id} ||| Name: {ItemName} ||| Category: {ItemCategory} ||| "
-                      f"Cost: {ItemCost} ||| Quantity: {ItemQuantity} ||| ManuID: {ManufacturerID} ")
+            if searchCategory:
+                for _id, ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID in searchCategory:
+                    print(f" ID: {_id} ||| Name: {ItemName} ||| Category: {ItemCategory} ||| "
+                          f"Cost: {ItemCost} ||| Quantity: {ItemQuantity} ||| ManuID: {ManufacturerID} ")
+            elif not searchCategory:
+                print("Oh no! It looks like we couldn't find that item. Try searching something else!")
+            else:
+                print("Error! Try again!")
 
         elif user_input == "3":
             pass
+        else:
+            print('Error: Please input 4 to go back! ')
+
+
+def delivery_menu():
+    menu = """ --- Delivery Menu ---
+    1) Add Delivery
+    2) Assign Delivery Employee
+    3) View Deliveries 
+    4) Go Back 
+    """
+
+    while (user_input := input(menu)) != "4":
+        if user_input == "1":
+            OrderId = input("What is the OrderID of the delivery? ")
+            EmployeeID = input("What is the EmployeeID of the delivery drive? ")
+            ManufacturerID = input("What is the ManufacturerID of the order? ")
+
+            database.create_delivery(OrderId, EmployeeID, ManufacturerID)
+        elif user_input == "2":
+            DeliveryID = input("What is the DeliveryID of the Delivery you are Updating")
+            EmployeeID = input("What is the EmployeeID of the person who will deliver the order? ")
+
+            database.updateDeliveryDriver(DeliveryID, EmployeeID)
+        elif user_input == "3":
+            deliveries = database.viewDeliveries()
+            for _id, orderID, empId, manID in deliveries:
+                print(f"DeliveryID: {_id} ||| OrderID: {orderID} ||| ManufacturerID: {manID}")
+        else:
+            print('Error: Please input 4 to go back! ')
+
+
+def order_menu():
+    menu = """ --- Order Menu --- \n
+    1) Create Order
+    2) Delete Order
+    3) View Orders
+    4) Go Back
+    """
+
+    while (user_input := input(menu)) != "4":
+        if user_input == "1":
+            DateOrdered = input("Input the date the order was placed: (mm-dd-yy)")
+            ManufacturerID = input("What is the manufacturer id? ")
+
+            database.create_order(DateOrdered, ManufacturerID)
+
+        elif user_input == "2":
+            removeID = input("What is the ID of the Order you are trying to delete?")
+            database.remove_order(removeID)
+        elif user_input == "3":
+            orders = database.viewOrders()
+
+            for orderID, dateOrdered, manufacturerID in orders:
+                print(f"ID: {orderID} ||| Date Ordered: {dateOrdered} ||| ManufacturerID: {manufacturerID}")
         else:
             print('Error: Please input 4 to go back! ')
 
@@ -185,7 +257,7 @@ if __name__ == "__main__":
     # <-------- Main, program starts here.
     database.create_tables()
 
-    while (user_input := input(menu_prompt)) != "7":
+    while (user_input := input(menu_prompt)) != "8":
         if user_input == "1":
             inventory_menu()
         elif user_input == "2":
@@ -196,5 +268,9 @@ if __name__ == "__main__":
             prompt_employee_menu()
         elif user_input == "5":
             manufacturer_menu()
+        elif user_input == "6":
+            delivery_menu()
+        elif user_input == "7":
+            order_menu()
         else:
             print("Invalid Input. Try Again")

@@ -19,12 +19,14 @@ DayOfDelivery TEXT
 );
 '''
 
-CREATE_DELIVERY = ''' CREATE TABLE IF NOT EXISTS Delivery(
+CREATE_DELIVERY_TABLE = ''' CREATE TABLE IF NOT EXISTS Delivery(
 DeliveryID INTEGER PRIMARY KEY AUTOINCREMENT,
 OrderID INTEGER,
 EmployeeID INTEGER,
-ExpectedDelivery REAL,
-FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID)
+ManufacturerID INTEGER,
+FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID),
+FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
+FOREIGN KEY (ManufacturerID) REFERENCES Manufacturer(ManufacturerID)
 );
 '''
 
@@ -53,7 +55,11 @@ VALUES (?, ?, ?, ?);
 '''
 ADD_MANUFACTURER = ''' INSERT INTO Manufacturer (ManufacturerName, ManufacturerAddress, DayOfDelivery) VALUES (?, ?, ?)
 '''
+CREATE_ORDER = ''' INSERT INTO Orders (DateOrdered, ManufacturerID) VALUES (?,?)
+'''
+CREATE_DELIVERY = ''' INSERT INTO Delivery (OrderID, EmployeeID, ManufacturerID) VALUES (?,?,?)'''
 
+REMOVE_ORDER = ''' DELETE FROM Orders WHERE OrderID = (?)'''
 REMOVE_EMPLOYEE = ''' DELETE FROM Employees WHERE EmployeeID = (?); '''
 REMOVE_ITEM = ''' DELETE FROM Inventory 
 WHERE ItemID = (?);
@@ -64,6 +70,10 @@ REMOVE_MANUFACTURER = ''' DELETE FROM Manufacturer WHERE ManufacturerID = (?);
 UPDATE_ITEM_STOCK = ''' UPDATE Inventory 
 SET ItemQuantity = ? 
 WHERE ItemID = ?
+'''
+UPDATE_DELIVERY_EMP = ''' UPDATE Delivery
+SET EmployeeID = ?
+WHERE DeliveryID = ?
 '''
 
 VIEW_INVENTORY = ''' SELECT I.ItemName, I.ItemCategory, I.ItemCost, I.ItemQuantity, I.ManufacturerID, 
@@ -80,6 +90,9 @@ WHERE ItemQuantity = 0
 '''
 VIEW_MANUFACTURERS = ''' SELECT * FROM Manufacturer;
 '''
+VIEW_ORDERS = ''' SELECT * FROM Orders '''
+
+VIEW_DELIVERIES = ''' SELECT * FROM Delivery'''
 
 SEARCH_MENU_NAME = ''' SELECT *
 FROM Inventory
@@ -91,6 +104,13 @@ FROM Inventory
 WHERE ItemCategory = (?)
 '''
 
+NEXT_DELIVERY = ''' SELECT DayOfDelivery
+FROM Manufacturer AS M
+JOIN Inventory AS I
+ON 	I.ManufacturerID = M.ManufacturerID
+WHERE M.ManufacturerID = (?)
+'''
+
 connection = _sqlite3.connect('Hardware.db')
 
 
@@ -100,7 +120,7 @@ def create_tables():
         connection.execute(CREATE_INVENTORY)
         connection.execute(CREATE_ORDER_TABLE)
         connection.execute(CREATE_EMPLOYEES_TABLE)
-        connection.execute(CREATE_DELIVERY)
+        connection.execute(CREATE_DELIVERY_TABLE)
 
 
 def add_item(ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID):
@@ -118,6 +138,21 @@ def add_manufacture(ManufacturerName, ManufacturerAddress, DayOfDelivery):
         connection.execute(ADD_MANUFACTURER, (ManufacturerName, ManufacturerAddress, DayOfDelivery))
 
 
+def create_order(DateOrdered, ManufacturerID):
+    with connection:
+        connection.execute(CREATE_ORDER, (DateOrdered, ManufacturerID))
+
+
+def create_delivery(OrderID, EmployeeID, ManufacturerID):
+    with connection:
+        connection.execute(CREATE_DELIVERY, (OrderID, EmployeeID, ManufacturerID))
+
+
+def remove_order(removeID):
+    with connection:
+        connection.execute(REMOVE_ORDER, (removeID))
+
+
 def remove_item(ItemID):
     with connection:
         connection.execute(REMOVE_ITEM, ItemID)
@@ -131,6 +166,11 @@ def remove_employee(EmployeeID):
 def updateItemStock(quantity, _id):
     with connection:
         connection.execute(UPDATE_ITEM_STOCK, (quantity, _id))
+
+
+def updateDeliveryDriver(DeliveryID, EmployeeID):
+    with connection:
+        connection.execute(UPDATE_DELIVERY_EMP, (DeliveryID, EmployeeID,))
 
 
 def viewInventory():
@@ -161,6 +201,20 @@ def viewManufacturers():
     return cursor.fetchall()
 
 
+def viewOrders():
+    cursor = connection.cursor()
+    cursor.execute(VIEW_ORDERS)
+
+    return cursor.fetchall()
+
+
+def viewDeliveries():
+    cursor = connection.cursor()
+    cursor.execute(VIEW_DELIVERIES, )
+
+    return cursor.fetchall()
+
+
 def removeManufacturer(removeId):
     with connection:
         connection.execute(REMOVE_MANUFACTURER, removeId)
@@ -173,8 +227,15 @@ def searchByName(ItemName):
     return cursor.fetchall()
 
 
+def getNextDeliveryDate(ManufacturerID):
+    cursor = connection.cursor()
+    cursor.execute(NEXT_DELIVERY, (ManufacturerID,))
+
+    return cursor.fetchone()
+
+
 def searchByCategory(ItemCategory):
     cursor = connection.cursor()
-    cursor.execute(SEARCH_BY_CATEGORY, (ItemCategory, ))
+    cursor.execute(SEARCH_BY_CATEGORY, (ItemCategory,))
 
     return cursor.fetchall()

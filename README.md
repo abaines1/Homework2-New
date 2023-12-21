@@ -30,16 +30,16 @@ SQLite Version - Inventory System - 12/18/2023
 
 - User Actions
 
-    - Insert New Items
-    - Remove Items
-    - Search Item by Name or Category
+    - Insert New Items *
+    - Remove Items *
+    - Search Item by Name or Category *
 
         - Retrieve number of item in stock
   
-            - If item is out of stock, return next possible delivery date
-      - If no items matching search term handle this
-      - Update stock amount !!!---!!!
-      - View sold out items
+            - If item is out of stock, return next possible delivery date *
+      - If no items matching search term handle this *
+      - Update stock amount !!!---!!! *
+      - View sold out items *
       - View last delivery person for specific item
       - Update delivery person for an item (sign in when updating stock?)
 
