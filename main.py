@@ -168,11 +168,12 @@ def delivery_menu():
     menu = """ --- Delivery Menu ---
     1) Add Delivery
     2) Assign Delivery Employee
-    3) View Deliveries 
-    4) Go Back 
+    3) View Deliveries
+    4) Information on Specific Deliver
+    5) Go Back 
     """
 
-    while (user_input := input(menu)) != "4":
+    while (user_input := input(menu)) != "5":
         if user_input == "1":
             OrderId = input("What is the OrderID of the delivery? ")
             EmployeeID = input("What is the EmployeeID of the delivery drive? ")
@@ -188,6 +189,13 @@ def delivery_menu():
             deliveries = database.viewDeliveries()
             for _id, orderID, empId, manID in deliveries:
                 print(f"DeliveryID: {_id} ||| OrderID: {orderID} ||| ManufacturerID: {manID}")
+        elif user_input == "4":
+            emp_delivery_info = database.empDeliveryInfo(input("What is the DeliveryID of the Order you want to know more about? "))
+            for _id, orderID, employeeID, manufacturerID, employeeID2, employeeFN, employeeLn, employeePhone,  employeeUser in emp_delivery_info:
+                print(f"DeliveryID: {_id} ||| OrderID: {orderID} ||| EmployeeID: {employeeID} ||| "
+                      f"ManufacturerID: {manufacturerID} ||| "
+                      f"EmployeeID: {employeeID2} ||| EmployeeName: {employeeFN + ' ' + employeeLn} ||| "
+                      f"EmployeePhone: {employeePhone} ||| EmployeeUserName: {employeeUser}")
         else:
             print('Error: Please input 4 to go back! ')
 

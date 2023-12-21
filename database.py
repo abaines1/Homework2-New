@@ -94,6 +94,13 @@ VIEW_ORDERS = ''' SELECT * FROM Orders '''
 
 VIEW_DELIVERIES = ''' SELECT * FROM Delivery'''
 
+EMP_DELIVERY_INFO = ''' Select * 
+FROM Delivery AS D
+JOIN Employees AS E
+ON D.EmployeeID = E.EmployeeID
+WHERE DeliveryID = ?
+'''
+
 SEARCH_MENU_NAME = ''' SELECT *
 FROM Inventory
 WHERE ItemName = (?)
@@ -227,6 +234,13 @@ def searchByName(ItemName):
     return cursor.fetchall()
 
 
+def searchByCategory(ItemCategory):
+    cursor = connection.cursor()
+    cursor.execute(SEARCH_BY_CATEGORY, (ItemCategory,))
+
+    return cursor.fetchall()
+
+
 def getNextDeliveryDate(ManufacturerID):
     cursor = connection.cursor()
     cursor.execute(NEXT_DELIVERY, (ManufacturerID,))
@@ -234,8 +248,8 @@ def getNextDeliveryDate(ManufacturerID):
     return cursor.fetchone()
 
 
-def searchByCategory(ItemCategory):
+def empDeliveryInfo(DeliveryID):
     cursor = connection.cursor()
-    cursor.execute(SEARCH_BY_CATEGORY, (ItemCategory,))
+    cursor.execute(EMP_DELIVERY_INFO, (DeliveryID,))
 
     return cursor.fetchall()

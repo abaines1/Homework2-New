@@ -40,8 +40,8 @@ SQLite Version - Inventory System - 12/18/2023
       - If no items matching search term handle this *
       - Update stock amount !!!---!!! *
       - View sold out items *
-      - View last delivery person for specific item
-      - Update delivery person for an item (sign in when updating stock?)
+      - View last delivery person for specific item *
+      - Update delivery person for an item (sign in when updating stock?) ***
 
 ### Database Schema
 
