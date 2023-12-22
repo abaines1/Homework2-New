@@ -88,7 +88,7 @@ WHERE ItemQuantity > 0
 VIEW_OUT_STOCK = ''' SELECT * FROM Inventory 
 WHERE ItemQuantity = 0
 '''
-VIEW_MANUFACTURERS = ''' SELECT * FROM Manufacturer;
+VIEW_MANUFACTURERS = ''' SELECT * FROM Manufacturer
 '''
 VIEW_ORDERS = ''' SELECT * FROM Orders '''
 
@@ -118,6 +118,12 @@ ON 	I.ManufacturerID = M.ManufacturerID
 WHERE M.ManufacturerID = (?)
 '''
 
+MANUFACTURER_EXISTS = '''
+SELECT ManufacturerID, ManufacturerAddress, DayOfDelivery 
+FROM Manufacturer 
+WHERE ManufacturerName = ?
+'''
+
 connection = _sqlite3.connect('Hardware.db')
 
 
@@ -130,9 +136,40 @@ def create_tables():
         connection.execute(CREATE_DELIVERY_TABLE)
 
 
-def add_item(ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID):
-    with connection:
-        connection.execute(INSERT_NEW_ITEM, (ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID))
+def add_item_with_manufacturer_and_delivery(ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerName, ManufacturerAddress=None, DayOfDelivery=None):
+
+    try:
+        with connection:
+            # Check if the manufacturer exists
+            manufacturer_check = connection.execute(MANUFACTURER_EXISTS,
+                                                    (ManufacturerName,))
+            manufacturer_details = manufacturer_check.fetchone()
+            print(manufacturer_details)
+
+            if not manufacturer_details:
+                cursor = connection.cursor()
+                # If the manufacturer doesn't exist, prompt for additional details
+                ManufacturerAddress = input("Enter manufacturer address: ")
+                DayOfDelivery = input("Enter day of delivery: ")
+                # Add the manufacturer
+                connection.execute(ADD_MANUFACTURER, (ManufacturerName, ManufacturerAddress, DayOfDelivery))
+                # Retrieve the newly added ManufacturerID
+                manufacturer_id = cursor.lastrowid
+            else:
+                # Use existing manufacturer details
+                manufacturer_id, existing_address, existing_delivery_day = manufacturer_details
+                if not ManufacturerAddress:
+                    ManufacturerAddress = existing_address
+                if not DayOfDelivery:
+                    DayOfDelivery = existing_delivery_day
+
+            # Add the item to the inventory
+            connection.execute(INSERT_NEW_ITEM, (ItemName, ItemCategory, ItemCost, ItemQuantity, manufacturer_id))
+            # Other related operations
+
+    except Exception as e:
+        print(f"Transaction failed: {e}")
+        connection.rollback()
 
 
 def add_employee(EmpFirstName, EmpLastName, EmpPhone, EmpUserName):
@@ -140,14 +177,14 @@ def add_employee(EmpFirstName, EmpLastName, EmpPhone, EmpUserName):
         connection.execute(ADD_EMPLOYEE, (EmpFirstName, EmpLastName, EmpPhone, EmpUserName))
 
 
-def add_manufacture(ManufacturerName, ManufacturerAddress, DayOfDelivery):
-    with connection:
-        connection.execute(ADD_MANUFACTURER, (ManufacturerName, ManufacturerAddress, DayOfDelivery))
-
-
 def create_order(DateOrdered, ManufacturerID):
-    with connection:
-        connection.execute(CREATE_ORDER, (DateOrdered, ManufacturerID))
+    try:
+        with connection:
+            connection.execute(CREATE_ORDER, (DateOrdered, ManufacturerID))
+
+    except Exception as e:
+        print(f"Transaction failed: {e}")
+        connection.rollback()
 
 
 def create_delivery(OrderID, EmployeeID, ManufacturerID):
@@ -156,8 +193,13 @@ def create_delivery(OrderID, EmployeeID, ManufacturerID):
 
 
 def remove_order(removeID):
-    with connection:
-        connection.execute(REMOVE_ORDER, (removeID))
+    try:
+        with connection:
+            connection.execute(REMOVE_ORDER, removeID)
+
+    except Exception as e:
+        print(f"Transaction failed: {e}")
+        connection.rollback()
 
 
 def remove_item(ItemID):
