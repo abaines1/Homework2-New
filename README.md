@@ -116,7 +116,7 @@ What would you like to do?
 
 ### TODO
 
-1) When there is no inventory at first time of DB file creation, it should return by saying "Inventory Database Empty. Please add data to the database and retry."
+1) When there is no inventory at first time of DB file creation, it should return by saying "Inventory Database Empty. Please add data to the database and retry." **** AS OF 6/11/2024 at 1250pm completed ***
 2) What is the ORDER_ITEMS table?
 3) View Employees under the Employee Tab
 4) One big Inventory Menu with sub menus? (Not being able to view inventory before adding things doesnt make sense)
