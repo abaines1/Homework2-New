@@ -25,7 +25,7 @@ OrderID INTEGER,
 EmployeeID INTEGER,
 ManufacturerID INTEGER,
 FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID),
-FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
+FOREIGN KEY (OrderID) REFERENCES Orders(OrderID) ON DELETE CASCADE,
 FOREIGN KEY (ManufacturerID) REFERENCES Manufacturer(ManufacturerID)
 );
 '''
@@ -47,9 +47,17 @@ EmployeeUserName TEXT
 );
 '''
 
+CREATE_ORDER_ITEMS = ''' CREATE TABLE IF NOT EXISTS ORDER_ITEMS(
+OrderID INTEGER,
+ItemID INTEGER,
+Quantity INTEGER,
+FOREIGN KEY (OrderID) REFERENCES orders(OrderID),
+FOREIGN KEY (ItemID) REFERENCES Inventory(ItemID),
+PRIMARY KEY (OrderID, ItemID) 
+);'''
+
 INSERT_NEW_ITEM = ''' INSERT INTO Inventory (ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID)
-VALUES (?, ?, ?, ?, ?);
-'''
+VALUES (?, ?, ?, ?, ?); '''
 ADD_EMPLOYEE = ''' INSERT INTO Employees (EmployeeFirstName, EmployeeLastName, EmployeePhone, EmployeeUserName)
 VALUES (?, ?, ?, ?);
 '''
@@ -76,6 +84,13 @@ SET EmployeeID = ?
 WHERE DeliveryID = ?
 '''
 
+FETCH_ORDER_ITEMS = ''' SELECT I.ItemID, I.ItemName,  OI.Quantity
+FROM Inventory AS I
+JOIN Order_Items AS OI
+ON I.ItemID = OI.ItemID
+WHERE OI.OrderID = ?
+'''
+
 VIEW_INVENTORY = ''' SELECT I.ItemName, I.ItemCategory, I.ItemCost, I.ItemQuantity, I.ManufacturerID, 
 M.ManufacturerName, M.ManufacturerAddress, M.DayOfDelivery
 FROM Inventory AS I
@@ -88,11 +103,13 @@ WHERE ItemQuantity > 0
 VIEW_OUT_STOCK = ''' SELECT * FROM Inventory 
 WHERE ItemQuantity = 0
 '''
-VIEW_MANUFACTURERS = ''' SELECT * FROM Manufacturer;
+VIEW_MANUFACTURERS = ''' SELECT * FROM Manufacturer
 '''
 VIEW_ORDERS = ''' SELECT * FROM Orders '''
 
-VIEW_DELIVERIES = ''' SELECT * FROM Delivery'''
+VIEW_DELIVERIES = ''' SELECT * FROM Delivery AS D
+JOIN Employees AS E
+ON D.EmployeeID = E.EmployeeID'''
 
 EMP_DELIVERY_INFO = ''' Select * 
 FROM Delivery AS D
@@ -118,6 +135,16 @@ ON 	I.ManufacturerID = M.ManufacturerID
 WHERE M.ManufacturerID = (?)
 '''
 
+MANUFACTURER_EXISTS = '''
+SELECT ManufacturerID, ManufacturerAddress, DayOfDelivery 
+FROM Manufacturer 
+WHERE ManufacturerName = ?
+'''
+
+EMPLOYEE_CHECK = ''' SELECT COUNT(*) AS EMP
+FROM Employees
+'''
+
 connection = _sqlite3.connect('Hardware.db')
 
 
@@ -126,13 +153,41 @@ def create_tables():
         connection.execute(CREATE_MANUFACTURER)
         connection.execute(CREATE_INVENTORY)
         connection.execute(CREATE_ORDER_TABLE)
+        connection.execute(CREATE_ORDER_ITEMS)
         connection.execute(CREATE_EMPLOYEES_TABLE)
         connection.execute(CREATE_DELIVERY_TABLE)
 
 
-def add_item(ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID):
-    with connection:
-        connection.execute(INSERT_NEW_ITEM, (ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID))
+def add_item_with_manufacturer(ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerName):
+    try:
+        with connection:
+            # Check if the manufacturer exists
+            manufacturer_check = connection.execute(MANUFACTURER_EXISTS,
+                                                    (ManufacturerName,))
+            manufacturer_details = manufacturer_check.fetchone()
+            print(manufacturer_details)
+
+            if not manufacturer_details:
+                cursor = connection.cursor()
+                # If the manufacturer doesn't exist, prompt for additional details
+                ManufacturerAddress = input("Enter manufacturer address: ")
+                DayOfDelivery = input("Enter day of delivery: ")
+                # Add the manufacturer
+                cursor.execute(ADD_MANUFACTURER, (ManufacturerName, ManufacturerAddress, DayOfDelivery))
+                # Retrieve the newly added ManufacturerID
+                manufacturer_id = cursor.lastrowid
+                print(manufacturer_id)
+            else:
+                # Use existing manufacturer details
+                manufacturer_id, existing_address, existing_delivery_day = manufacturer_details
+
+            # Add the item to the inventory
+            connection.execute(INSERT_NEW_ITEM, (ItemName, ItemCategory, ItemCost, ItemQuantity, manufacturer_id))
+            # Other related operations
+
+    except Exception as e:
+        print(f"Transaction failed: {e}")
+        connection.rollback()
 
 
 def add_employee(EmpFirstName, EmpLastName, EmpPhone, EmpUserName):
@@ -140,24 +195,41 @@ def add_employee(EmpFirstName, EmpLastName, EmpPhone, EmpUserName):
         connection.execute(ADD_EMPLOYEE, (EmpFirstName, EmpLastName, EmpPhone, EmpUserName))
 
 
-def add_manufacture(ManufacturerName, ManufacturerAddress, DayOfDelivery):
-    with connection:
-        connection.execute(ADD_MANUFACTURER, (ManufacturerName, ManufacturerAddress, DayOfDelivery))
+def create_order_and_delivery(DateOrdered, ManufacturerID):
+    try:
+        with connection:
+            cursor = connection.cursor()
+            # Insert into orders table
+            result_order = connection.execute(CREATE_ORDER, (DateOrdered, ManufacturerID))
+            order_id = result_order  # Get the ID of the newly inserted order
 
+            # show all employees available to deliver
+            employee_exists = cursor.execute(EMPLOYEE_CHECK).rowcount
 
-def create_order(DateOrdered, ManufacturerID):
-    with connection:
-        connection.execute(CREATE_ORDER, (DateOrdered, ManufacturerID))
+            Employees = cursor.execute('SELECT EmployeeID, EmployeeFirstName, EmployeeLastName FROM Employees')
 
+            if employee_exists > -1:
+                for empID, firstName, lastName in Employees:
+                    print(f"ID: {empID} ||| FirstName: {firstName} ||| LastName: {lastName}")
+                    connection.execute(CREATE_DELIVERY, (order_id, empID, ManufacturerID))
+            else:
+                print("There are no employees to assign.")
+                connection.rollback()
 
-def create_delivery(OrderID, EmployeeID, ManufacturerID):
-    with connection:
-        connection.execute(CREATE_DELIVERY, (OrderID, EmployeeID, ManufacturerID))
+        connection.commit()  # Commit the transaction once all queries are executed
+    except Exception as e:
+        print(f"Transaction failed: {e}")
+        connection.rollback()
 
 
 def remove_order(removeID):
-    with connection:
-        connection.execute(REMOVE_ORDER, (removeID))
+    try:
+        with connection:
+            connection.execute(REMOVE_ORDER, removeID)
+
+    except Exception as e:
+        print(f"Transaction failed: {e}")
+        connection.rollback()
 
 
 def remove_item(ItemID):

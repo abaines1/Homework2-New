@@ -3,7 +3,11 @@ SQLite Version - Inventory System - 12/18/2023
 
 ## Introduction
 
+*** 
+*** Add Item + Manufacturer = 1 Trans
+*** Add Order + Add Delivery = 1 Trans
 
+*** Employee ***
 
 ### Tasks: 
 
@@ -108,3 +112,22 @@ What would you like to do?
 
 1) Build Menu
 2) 
+
+
+### TODO
+
+1) When there is no inventory at first time of DB file creation, it should return by saying "Inventory Database Empty. Please add data to the database and retry."
+2) What is the ORDER_ITEMS table?
+3) View Employees under the Employee Tab
+4) One big Inventory Menu with sub menus? (Not being able to view inventory before adding things doesnt make sense)
+5) If there are no deliveries, return (Currently no deliveries)
+6) If there are no orders, return (currently no orders)
+7) When adding an item to inventory, if the price is 13.99, the database can only accept an int (change to float)
+8) Price Not in the Print() when viewing inventory && seperator between Price, Quantity, and ManID in View Inventory
+9) Seperator between ManAddress and DayOfDelivery in View Manufacturers
+10) When creating orders, it says after inputing ManuID (***why manu id isnt this the company's employee?***)
+11) when going back iin Search menu it needs to be go back on 3 not 4
+12) When changing quantity of items in stock, maybe when prompting show how many items are currently in stock in the system? 
+
+Potential: When opening the database for the first time (with no inventory or anything) maybe a seperate menu should prompt information to be created before the database can even be viewed
+Potential: Admin vs User? (admin can create employees, etc)
