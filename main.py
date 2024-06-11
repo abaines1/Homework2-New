@@ -222,7 +222,7 @@ def listTotalInventory():
             print(f"Item: {ItemName} ||| Category: {ItemCategory} ||| {ItemCost} Quantity: {ItemQuantity} "
                 f"ManID: {ManufacturerID} ||| ManufacturerName: {ManufacturerName} ||| ManuAddress: {ManufacturerAddress} ||| Day of Delivery: {DayOfDelivery}")
     else:
-        print("No inventory found")
+        print("No inventory found. Please add data to the database and retry.")
 
 def listInStockInventory():
     inStock = database.viewInStock()
