@@ -84,21 +84,24 @@ def prompt_update_inventory():
 
 def prompt_employee_menu():
     employee_menu = """ --- Employee Menu ---
-    1) Add Employee
-    2) Remove Employee
-    3) Go Back
+    1) View Employees
+    2) Add Employee
+    3) Remove Employee
+    4) Go Back
     """
 
-    while (user_input := input(employee_menu)) != "3":
+    while (user_input := input(employee_menu)) != "4":
         if user_input == "1":
-            add_employee_menu()
+            listEmployees()
         elif user_input == "2":
+            add_employee_menu()
+        elif user_input == "3":
             EmployeeID = input('Please input the EmployeeID of the person you would like to remove: ')
             database.remove_employee(EmployeeID)
-        elif user_input == "3":
+        elif user_input == "4":
             pass
         else:
-            print('Error: Please input 3 to go back! ')
+            print('Error: Please input 4 to go back! ')
 
 
 def inventory_menu():
@@ -241,6 +244,14 @@ def listOutStockInventory():
             f" --- Items In Stock ---- \n"
             f"Item: {ItemName}  ||| Category: {ItemCategory} ||| Cost: {ItemCost}  ||| Quantity: {ItemQuantity} ||| ManufacturerID: {ManufacturerID} \n")
 
+def listEmployees():
+    employees = database.viewEmployees()
+
+    if employees:
+        for empID, firstName, lastName, phoneNumber, userName in employees:
+            print(f"EmployeeID: {empID} ||| First Name: {firstName} Last Name: {lastName} ||| Phone Number: {phoneNumber} ||| Username: {userName}")
+    else:
+        print("There are no employees. Add employees to the database before continuing.")
 
 if __name__ == "__main__":
     # <-------- Main, program starts here.
