@@ -145,6 +145,9 @@ EMPLOYEE_CHECK = ''' SELECT COUNT(*) AS EMP
 FROM Employees
 '''
 
+VIEW_EMPLOYEES = ''' SELECT * FROM Employees
+'''
+
 connection = _sqlite3.connect('Hardware.db')
 
 
@@ -293,6 +296,11 @@ def viewDeliveries():
 
     return cursor.fetchall()
 
+def viewEmployees():
+    cursor = connection.cursor()
+    cursor.execute(VIEW_EMPLOYEES)
+    
+    return cursor.fetchall()
 
 def removeManufacturer(removeId):
     with connection:
