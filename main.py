@@ -105,23 +105,58 @@ def prompt_employee_menu():
 
 
 def inventory_menu():
-    menu = """ --- Inventory Menu ---
-    1) View Total Inventory (In and Out of Stock)
-    2) View In Stock Inventory
-    3) View Out of Stock Inventory 
+    main_menu = """ --- Inventory Menu ---
+    1) View Inventory
+    2) Update Inventory
+    3) Search Inventory
     4) Go Back
     """
 
-    while (user_input := input(menu)) != "4":
-        if user_input == "1":
-            listTotalInventory()
-        elif user_input == "2":
-            listInStockInventory()
-        elif user_input == "3":
-            listOutStockInventory()
-        else:
-            print('Error: Please input 4 to go back! ')
+    view_inv_menu = """ --- View Inventory ---
+    1) Total Inventory
+    2) In Stock Inventory
+    3) Out of Stock Inventory 
+    4) Go Back
+    """
 
+    # while (user_input := input(menu)) != "4":
+    #     if user_input == "1":
+    #         listTotalInventory()
+    #     elif user_input == "2":
+    #         listInStockInventory()
+    #     elif user_input == "3":
+    #         listOutStockInventory()
+    #     else:
+    #         print('Error: Please input 4 to go back! ')
+
+    while (user_input := input(main_menu)) != "4":
+        # View Inventory
+        if user_input == "1":
+            while (user_input2 := input(view_inv_menu)) != "4":
+                # Total Inventory
+                if user_input2 == "1":
+                    listTotalInventory()
+                # In Stock Inventory
+                elif user_input2 == "2":
+                    listInStockInventory()
+                # Out of Stock
+                elif user_input2 == "3":
+                    listOutStockInventory()
+                # Go Back
+                elif user_input2 == "4":
+                    pass
+                else:
+                    print("Error: Invalid input. Please input 4 to go back.")
+        # Update Inventory *** STOPPED HERE what to do: move update menus into new inventory menu that has been condensed
+        elif user_input == "2":
+            pass
+        # Search Inventory
+        elif user_input == "3":
+            pass
+        elif user_input == "4":
+            pass
+        else:
+            print("Error: Invalid Input. Input 4 to go back to the main menu.")
 
 def manufacturer_menu():
     menu = """ --- Manufacture Information Menu ---
