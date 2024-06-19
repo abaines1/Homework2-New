@@ -157,14 +157,20 @@ What would you like to do?
                 {print known item categories}
             3) Go Back
 
-5) If there are no deliveries, return (Currently no deliveries)
-6) If there are no orders, return (currently no orders)
-7) When adding an item to inventory, if the price is 13.99, the database can only accept an int (change to float)
-8) Price Not in the Print() when viewing inventory && seperator between Price, Quantity, and ManID in View Inventory
-9) Seperator between ManAddress and DayOfDelivery in View Manufacturers
-10) When creating orders, it says after inputing ManuID (***why manu id isnt this the company's employee?***)
-11) when going back iin Search menu it needs to be go back on 3 not 4
-12) When changing quantity of items in stock, maybe when prompting show how many items are currently in stock in the system? 
+5) If there are no deliveries, return (Currently no deliveries) ****
+6) If there are no orders, return (currently no orders) **** 
+7) When adding an item to inventory, if the price is 13.99, the database can only accept an int (change to float) **** 
+8) Price Not in the Print() when viewing inventory && seperator between Price, Quantity, and ManID in View Inventory **** 
+9) Seperator between ManAddress and DayOfDelivery in View Manufacturers ****
+10) When creating orders, it says after inputing ManuID (***why manu id isnt this the company's employee?***) ****
+11) when going back iin Search menu it needs to be go back on 3 not 4 ****
+12) When changing quantity of items in stock, maybe when prompting show how many items are currently in stock in the system? **** 
+13) Print Inventory showing the items ^^^ and maybe say "Item Deleted" if successful ****
+14) Update Quantity of an Item ****
+    - When selecting you are then prompted with a delete querey when it should be asking what you want to update
+    - When asking about ID of what you are updating, after selecting, print the items details to insure the item selected is the correct option
+    - If no item exists, alert the user (inventory is empty or item id selected does not exist)
 
 Potential: When opening the database for the first time (with no inventory or anything) maybe a seperate menu should prompt information to be created before the database can even be viewed
 Potential: Admin vs User? (admin can create employees, etc)
+Potential: Editing menu spacing layouts

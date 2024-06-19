@@ -144,9 +144,12 @@ WHERE ManufacturerName = ?
 EMPLOYEE_CHECK = ''' SELECT COUNT(*) AS EMP
 FROM Employees
 '''
-
 VIEW_EMPLOYEES = ''' SELECT * FROM Employees
 '''
+
+ITEM_EXISTS = ''' SELECT 1, ItemName 
+FROM Inventory 
+WHERE ItemID = (?)'''
 
 connection = _sqlite3.connect('Hardware.db')
 
@@ -234,16 +237,25 @@ def remove_order(removeID):
         print(f"Transaction failed: {e}")
         connection.rollback()
 
-
+# idea: maybe it should print ( Item with ID: {ItemID} and name {ItemName} has been successfully deleted) 
 def remove_item(ItemID):
-    with connection:
-        connection.execute(REMOVE_ITEM, ItemID)
+    try: 
+        with connection:
+            connection.execute(REMOVE_ITEM, ItemID)
+            print(f"Item Removed Successfully")
+    except: 
+        print("Error. Try again")
 
 
 def remove_employee(EmployeeID):
     with connection:
         connection.execute(REMOVE_EMPLOYEE, EmployeeID)
 
+def doesItemExist(_id):
+    cursor = connection.cursor()
+    item = cursor.execute(ITEM_EXISTS, (_id))
+
+    return item.fetchone()
 
 def updateItemStock(quantity, _id):
     with connection:
