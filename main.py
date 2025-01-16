@@ -194,11 +194,15 @@ def delivery_menu():
     while (user_input := input(menu)) != "3":
         if user_input == "1":
             deliveries = database.viewDeliveries()
-            for _id, orderID, manID, empId, empFirstName, empLastName, empPhone, empAddress, empUserName in deliveries:
-                print(f"DeliveryID: {_id} ||| OrderID: {orderID} ||| ManufacturerID: {manID} ||| EmployeeID: {empId}"
-                      f"EmployeeFirstName: {empFirstName} ||| EmployeeLastName: {empLastName} ||| "
-                      f"EmployeePhoneNumber: {empPhone} ||| EmployeeAddress: {empAddress} ||| "
-                      f"EmployeeUserName: {empUserName}")
+            deliveries_size = len(deliveries)
+            if deliveries_size > 0:
+                for _id, orderID, manID, empId, empFirstName, empLastName, empPhone, empAddress, empUserName in deliveries:
+                    print(f"DeliveryID: {_id} ||| OrderID: {orderID} ||| ManufacturerID: {manID} ||| EmployeeID: {empId}"
+                        f"EmployeeFirstName: {empFirstName} ||| EmployeeLastName: {empLastName} ||| "
+                        f"EmployeePhoneNumber: {empPhone} ||| EmployeeAddress: {empAddress} ||| "
+                        f"EmployeeUserName: {empUserName}")
+            else:
+                print("No deliveries found. Please add data to the database and retry.")
         elif user_input == "2":
 
             DeliveryID = input("What is the DeliveryID of the Delivery you are Updating")
@@ -230,19 +234,24 @@ def listTotalInventory():
 def listInStockInventory():
     inStock = database.viewInStock()
 
-    for _id, ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID in inStock:
-        print(
-            f" --- Items In Stock ---- \n"
-            f"Item: {ItemName}  ||| Category: {ItemCategory} ||| Cost: {ItemCost}  ||| Quantity: {ItemQuantity} ||| ManufacturerID: {ManufacturerID} \n")
-
+    if inStock:
+        for _id, ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID in inStock:
+            print(
+                f" --- Items In Stock ---- \n"
+                f"Item: {ItemName}  ||| Category: {ItemCategory} ||| Cost: {ItemCost}  ||| Quantity: {ItemQuantity} ||| ManufacturerID: {ManufacturerID} \n")
+    else:
+        print("No items in stock. Please add data to the database and retry.")
 
 def listOutStockInventory():
     OutOfStock = database.viewOutOfStock()
 
-    for _id, ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID in OutOfStock:
-        print(
-            f" --- Items In Stock ---- \n"
-            f"Item: {ItemName}  ||| Category: {ItemCategory} ||| Cost: {ItemCost}  ||| Quantity: {ItemQuantity} ||| ManufacturerID: {ManufacturerID} \n")
+    if OutOfStock:
+        for _id, ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID in OutOfStock:
+            print(
+                f" --- Items In Stock ---- \n"
+                f"Item: {ItemName}  ||| Category: {ItemCategory} ||| Cost: {ItemCost}  ||| Quantity: {ItemQuantity} ||| ManufacturerID: {ManufacturerID} \n")
+    else:
+        print("No items currently out of stock.")
 
 def listEmployees():
     employees = database.viewEmployees()

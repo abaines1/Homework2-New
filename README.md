@@ -120,14 +120,60 @@ What would you like to do?
 2) What is the ORDER_ITEMS table?
 3) View Employees under the Employee Tab *** AS OF 6/15/2024 at 1106AM completed ***
 4) One big Inventory Menu with sub menus? (Not being able to view inventory before adding things doesnt make sense)
-5) If there are no deliveries, return (Currently no deliveries)
-6) If there are no orders, return (currently no orders)
-7) When adding an item to inventory, if the price is 13.99, the database can only accept an int (change to float)
-8) Price Not in the Print() when viewing inventory && seperator between Price, Quantity, and ManID in View Inventory
-9) Seperator between ManAddress and DayOfDelivery in View Manufacturers
-10) When creating orders, it says after inputing ManuID (***why manu id isnt this the company's employee?***)
-11) when going back iin Search menu it needs to be go back on 3 not 4
-12) When changing quantity of items in stock, maybe when prompting show how many items are currently in stock in the system? 
+    *** OLD MENU ***
+    1) View Inventory
+        1) View Total Inventory 
+        2) View In Stock
+        3) Out Of Stock 
+        4) Go Back
+    2) Search Inventory
+        1) Search By Name
+        2) Search By Category
+        3) Go Back
+    3) Update Inventory
+        1) Add New Item
+        2) Remove Item
+        3) Update Quantity
+
+    *** NEW MENU *** 
+    1) Inventory
+        1) View Inventory
+            Which store inventory report do you need?
+            1) Total Inventory
+            2) In Stock Inventory
+            3) Out of Stock Inventory
+            4) Go Back
+        2) Update Inventory
+            1) Add New Item
+            2) Remove Item
+            3) Update Quantity
+            4) Go Back
+        3) Search Inventory
+            Do you want to search by name or category?
+            1) Name
+                1) What is the name of the item you want to search for?
+            2) Category
+                1) What is the category of the item you want to search for?
+                {print known item categories}
+            3) Go Back
+    2) Employee Accounts
+    3) Orders
+    4) Sign off
+
+5) If there are no deliveries, return (Currently no deliveries) *** AS OF 1/16/2025 - COMPLETED *** 
+6) If there are no orders, return (currently no orders) **** 
+7) When adding an item to inventory, if the price is 13.99, the database can only accept an int (change to float) **** 
+8) Price Not in the Print() when viewing inventory && seperator between Price, Quantity, and ManID in View Inventory **** 
+9) Seperator between ManAddress and DayOfDelivery in View Manufacturers ****
+10) When creating orders, it says after inputing ManuID (***why manu id isnt this the company's employee?***) ****
+11) when going back iin Search menu it needs to be go back on 3 not 4 ****
+12) When changing quantity of items in stock, maybe when prompting show how many items are currently in stock in the system? **** 
+13) Print Inventory showing the items ^^^ and maybe say "Item Deleted" if successful ****
+14) Update Quantity of an Item ****
+    - When selecting you are then prompted with a delete querey when it should be asking what you want to update
+    - When asking about ID of what you are updating, after selecting, print the items details to insure the item selected is the correct option
+    - If no item exists, alert the user (inventory is empty or item id selected does not exist)
 
 Potential: When opening the database for the first time (with no inventory or anything) maybe a seperate menu should prompt information to be created before the database can even be viewed
 Potential: Admin vs User? (admin can create employees, etc)
+Potential: Editing menu spacing layouts
