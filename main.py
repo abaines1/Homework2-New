@@ -45,8 +45,11 @@ def order_menu():
         elif user_input == "3":
             orders = database.viewOrders()
 
-            for orderID, dateOrdered, manufacturerID in orders:
-                print(f"ID: {orderID} ||| Date Ordered: {dateOrdered} ||| ManufacturerID: {manufacturerID}")
+            if orders:
+                for orderID, dateOrdered, manufacturerID in orders:
+                    print(f"ID: {orderID} ||| Date Ordered: {dateOrdered} ||| ManufacturerID: {manufacturerID}")
+            else: 
+                print("No orders found. Please add data to the database and retry")
         else:
             print('Error: Please input 4 to go back! ')
 

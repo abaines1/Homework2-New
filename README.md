@@ -161,7 +161,7 @@ What would you like to do?
     4) Sign off
 
 5) If there are no deliveries, return (Currently no deliveries) *** AS OF 1/16/2025 - COMPLETED *** 
-6) If there are no orders, return (currently no orders) **** 
+6) If there are no orders, return (currently no orders) *** AS OF 1/16/2025 - COMPLETED ***
 7) When adding an item to inventory, if the price is 13.99, the database can only accept an int (change to float) **** 
 8) Price Not in the Print() when viewing inventory && seperator between Price, Quantity, and ManID in View Inventory **** 
 9) Seperator between ManAddress and DayOfDelivery in View Manufacturers ****
