@@ -229,8 +229,8 @@ def listTotalInventory():
 
     if inventory:
         for ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID, ManufacturerName, ManufacturerAddress, DayOfDelivery in inventory:
-            print(f"Item: {ItemName} ||| Category: {ItemCategory} ||| {ItemCost} Quantity: {ItemQuantity} "
-                f"ManID: {ManufacturerID} ||| ManufacturerName: {ManufacturerName} ||| ManuAddress: {ManufacturerAddress} ||| Day of Delivery: {DayOfDelivery}")
+            print(f"Item: {ItemName} ||| Category: {ItemCategory} ||| Item Cost: {ItemCost} ||| Quantity: {ItemQuantity} ||| "
+                f"\nManID: {ManufacturerID} ||| ManufacturerName: {ManufacturerName} ||| ManuAddress: {ManufacturerAddress} ||| Day of Delivery: {DayOfDelivery}")
     else:
         print("No inventory found. Please add data to the database and retry.")
 
