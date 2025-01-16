@@ -234,19 +234,24 @@ def listTotalInventory():
 def listInStockInventory():
     inStock = database.viewInStock()
 
-    for _id, ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID in inStock:
-        print(
-            f" --- Items In Stock ---- \n"
-            f"Item: {ItemName}  ||| Category: {ItemCategory} ||| Cost: {ItemCost}  ||| Quantity: {ItemQuantity} ||| ManufacturerID: {ManufacturerID} \n")
-
+    if inStock:
+        for _id, ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID in inStock:
+            print(
+                f" --- Items In Stock ---- \n"
+                f"Item: {ItemName}  ||| Category: {ItemCategory} ||| Cost: {ItemCost}  ||| Quantity: {ItemQuantity} ||| ManufacturerID: {ManufacturerID} \n")
+    else:
+        print("No items in stock. Please add data to the database and retry.")
 
 def listOutStockInventory():
     OutOfStock = database.viewOutOfStock()
 
-    for _id, ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID in OutOfStock:
-        print(
-            f" --- Items In Stock ---- \n"
-            f"Item: {ItemName}  ||| Category: {ItemCategory} ||| Cost: {ItemCost}  ||| Quantity: {ItemQuantity} ||| ManufacturerID: {ManufacturerID} \n")
+    if OutOfStock:
+        for _id, ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID in OutOfStock:
+            print(
+                f" --- Items In Stock ---- \n"
+                f"Item: {ItemName}  ||| Category: {ItemCategory} ||| Cost: {ItemCost}  ||| Quantity: {ItemQuantity} ||| ManufacturerID: {ManufacturerID} \n")
+    else:
+        print("No items currently out of stock.")
 
 def listEmployees():
     employees = database.viewEmployees()
