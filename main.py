@@ -16,7 +16,7 @@ menu_prompt = """ --- Menu ---
 def prompt_add_item_and_manufacturer_delivery():
     ItemName = input('What is the name of the item? ')
     ItemCategory = input('Under what category does this item fall under? ')
-    ItemCost = int(input('What does each of the items cost? (per item) '))
+    ItemCost = float(input('What does each of the items cost? (per item) '))
     ItemQuantity = int(input('How many of this item are we adding? '))
     ManufacturerName = input('What is the name of the Manufacturer? ')
 
