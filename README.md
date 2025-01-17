@@ -163,8 +163,10 @@ What would you like to do?
 5) If there are no deliveries, return (Currently no deliveries) *** AS OF 1/16/2025 - COMPLETED *** 
 6) If there are no orders, return (currently no orders) *** AS OF 1/16/2025 - COMPLETED ***
 7) When adding an item to inventory, if the price is 13.99, the database can only accept an int (change to float) *** AS OF 1/16/2025 - COMPLETED ***
-8) Price Not in the Print() when viewing inventory && seperator between Price, Quantity, and ManID in View Inventory **** 
-9) Seperator between ManAddress and DayOfDelivery in View Manufacturers ****
+8) Price Not in the Print() when viewing inventory && seperator between Price, Quantity, and ManID in View Inventory *** AS OF 1/16/2025 - COMPLETED ***
+9) Seperator between ManAddress and DayOfDelivery in View Manufacturers *** AS OF 1/17/2025 - COMPLETED ***
++- There are two different functions of Viewing Manufactures *** DONE ***
++- One is located in the menu and the other is a separate function called listManufacturers *** DONE ***
 10) When creating orders, it says after inputing ManuID (***why manu id isnt this the company's employee?***) ****
 11) when going back iin Search menu it needs to be go back on 3 not 4 ****
 12) When changing quantity of items in stock, maybe when prompting show how many items are currently in stock in the system? **** 

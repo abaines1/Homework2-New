@@ -137,7 +137,7 @@ def manufacturer_menu():
 
             for manuID, manuName, manuAddress, manuDayDelivery in manufacturers:
                 print(
-                    f"ManufacturerID: {manuID} ||| ManufacturerName: {manuName} ||| ManufacturerAddress: {manuAddress} Day of Delivery: {manuDayDelivery}")
+                    f"ManufacturerID: {manuID} ||| ManufacturerName: {manuName} ||| ManufacturerAddress: {manuAddress} ||| Day of Delivery: {manuDayDelivery}")
         elif user_input == "2":
             pass
         else:
@@ -216,12 +216,12 @@ def delivery_menu():
             print('Error: Please input 3 to go back! ')
 
 
-def listManufacturers():
-    manufacturers = database.viewManufacturers()
+# def listManufacturers():
+#     manufacturers = database.viewManufacturers()
 
-    for _id, ManufacturerName, ManufacturerAddress, DayOfDelivery in manufacturers:
-        print(f" --- Manufacturers --- "
-              f"ID: {_id} ||| Name: {ManufacturerName} ||| Address: {ManufacturerAddress} ||| Day of Deliveries: {DayOfDelivery}")
+#     for _id, ManufacturerName, ManufacturerAddress, DayOfDelivery in manufacturers:
+#         print(f" --- Manufacturers --- "
+#               f"ID: {_id} ||| Name: {ManufacturerName} ||| Address: {ManufacturerAddress} ||| Day of Deliveries: {DayOfDelivery}")
 
 
 def listTotalInventory():
