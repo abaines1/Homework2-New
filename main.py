@@ -125,7 +125,7 @@ def listOutStockInventory():
     if OutOfStock:
         for _id, ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID in OutOfStock:
             print(
-                f" --- Items In Stock ---- \n"
+                f" --- Items Out of Stock ---- \n"
                 f"Item: {ItemName}  ||| Category: {ItemCategory} ||| Cost: {ItemCost}  ||| Quantity: {ItemQuantity} ||| ManufacturerID: {ManufacturerID} \n")
     else:
         print("No items currently out of stock.")
@@ -161,7 +161,7 @@ def prompt_update_inventory():
             quantity = input("What is new quantity of the item? ")
             database.updateItemStock(quantity, _id)
         else:
-            print('Error: Please input 3 to go back! ')
+            print('Error: Please input 4 to go back! ')
 
 #### MANUFACTURER MENUS SECTION
 def manufacturer_menu():
