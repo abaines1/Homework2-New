@@ -149,7 +149,6 @@ What would you like to do?
   4. Sign off
 
 - [ ] 10. Updates to Order Menu functionality
-
   - [ ] a. If there are no employees it prints that there are none to assign to. After this we should prompt to add an employee
   - [ ] b. **_why manu id isnt this the company's employee?_**
   - [ ] c. When asked to input the date - should we assume that the order was placed on todays date?
