@@ -33,8 +33,8 @@ FOREIGN KEY (ManufacturerID) REFERENCES Manufacturer(ManufacturerID)
 CREATE_ORDER_TABLE = ''' CREATE TABLE IF NOT EXISTS Orders(
 OrderID INTEGER PRIMARY KEY AUTOINCREMENT,
 DateOrdered REAL,
-ManufacturerID INTEGER,
-FOREIGN KEY (ManufacturerID) REFERENCES Manufacturer(ManufacturerID)
+EmployeeUserName TEXT,
+FOREIGN KEY (EmployeeUserName) REFERENCES Employees(EmployeeUserName)
 );
 '''
 
@@ -47,13 +47,13 @@ EmployeeUserName TEXT
 );
 '''
 
-CREATE_ORDER_ITEMS = ''' CREATE TABLE IF NOT EXISTS ORDER_ITEMS(
+CREATE_ORDER_ITEMS = ''' CREATE TABLE IF NOT EXISTS Order_Items(
 OrderID INTEGER,
 ItemID INTEGER,
 Quantity INTEGER,
-FOREIGN KEY (OrderID) REFERENCES orders(OrderID),
-FOREIGN KEY (ItemID) REFERENCES Inventory(ItemID),
-PRIMARY KEY (OrderID, ItemID) 
+PRIMARY KEY (OrderID, ItemID),
+FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
+FOREIGN KEY (ItemID) REFERENCES Inventory(ItemID)
 );'''
 
 INSERT_NEW_ITEM = ''' INSERT INTO Inventory (ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID)
@@ -63,9 +63,14 @@ VALUES (?, ?, ?, ?);
 '''
 ADD_MANUFACTURER = ''' INSERT INTO Manufacturer (ManufacturerName, ManufacturerAddress, DayOfDelivery) VALUES (?, ?, ?)
 '''
-CREATE_ORDER = ''' INSERT INTO Orders (DateOrdered, ManufacturerID) VALUES (?,?)
+CREATE_ORDER = ''' INSERT INTO Orders (DateOrdered, EmployeeUserName) VALUES (?,?)
 '''
-CREATE_DELIVERY = ''' INSERT INTO Delivery (OrderID, EmployeeID, ManufacturerID) VALUES (?,?,?)'''
+
+ADD_ITEM_TO_ORDER = '''
+INSERT INTO Order_Items (OrderID, ItemID, Quantity) VALUES (?,?,?)
+'''
+
+CREATE_DELIVERY = ''' INSERT INTO Delivery (OrderID, ManufacturerID) VALUES (?,?)'''
 
 REMOVE_ORDER = ''' DELETE FROM Orders WHERE OrderID = (?)'''
 REMOVE_EMPLOYEE = ''' DELETE FROM Employees WHERE EmployeeID = (?); '''
@@ -84,11 +89,9 @@ SET EmployeeID = ?
 WHERE DeliveryID = ?
 '''
 
-FETCH_ORDER_ITEMS = ''' SELECT I.ItemID, I.ItemName,  OI.Quantity
-FROM Inventory AS I
-JOIN Order_Items AS OI
-ON I.ItemID = OI.ItemID
-WHERE OI.OrderID = ?
+FETCH_ORDER_ITEMS = ''' SELECT * 
+FROM Order_Items 
+WHERE OrderID = (?)
 '''
 
 VIEW_INVENTORY = ''' SELECT I.ItemName, I.ItemCategory, I.ItemCost, I.ItemQuantity, I.ManufacturerID, 
@@ -97,6 +100,13 @@ FROM Inventory AS I
 JOIN Manufacturer as M
 ON I.ManufacturerID = M.ManufacturerID
 '''
+
+VIEW_INVENTORY_BY_CATEOGRY = '''
+SELECT * 
+FROM Inventory
+WHERE ItemCategory = ?
+'''
+
 VIEW_IN_STOCK = ''' SELECT * FROM Inventory 
 WHERE ItemQuantity > 0
 '''
@@ -139,6 +149,12 @@ MANUFACTURER_EXISTS = '''
 SELECT ManufacturerID, ManufacturerAddress, DayOfDelivery 
 FROM Manufacturer 
 WHERE ManufacturerName = ?
+'''
+
+MANUFACTURER_EXISTS_2 = '''
+SELECT ManufacturerID
+FROM Manufacturer
+WHERE ManufacturerID = ?
 '''
 
 USERNAME_EXISTS = '''
@@ -209,32 +225,34 @@ def username_exists(EmpUserName):
 
     return cursor.fetchall()
 
-def create_order_and_delivery(DateOrdered, ManufacturerID):
+def create_order(DateOrdered, EmployeeUserName):
     try:
-        with connection:
-            cursor = connection.cursor()
-            # Insert into orders table
-            result_order = connection.execute(CREATE_ORDER, (DateOrdered, ManufacturerID))
-            order_id = result_order  # Get the ID of the newly inserted order
+        cursor = connection.cursor()
+        cursor.execute(CREATE_ORDER, (DateOrdered, EmployeeUserName))
 
-            # show all employees available to deliver
-            employee_exists = cursor.execute(EMPLOYEE_CHECK).rowcount
+        print("Order Created Successfully! Please proceed to adding items!")
+        return cursor.lastrowid
 
-            Employees = cursor.execute('SELECT EmployeeID, EmployeeFirstName, EmployeeLastName FROM Employees')
-
-            if employee_exists > -1:
-                for empID, firstName, lastName in Employees:
-                    print(f"ID: {empID} ||| FirstName: {firstName} ||| LastName: {lastName}")
-                    connection.execute(CREATE_DELIVERY, (order_id, empID, ManufacturerID))
-            else:
-                print("There are no employees to assign.")
-                connection.rollback()
-
-        connection.commit()  # Commit the transaction once all queries are executed
     except Exception as e:
         print(f"Transaction failed: {e}")
         connection.rollback()
 
+def add_items_to_order(OrderID, ItemID, Quantity):
+    with connection:
+        connection.execute(ADD_ITEM_TO_ORDER, (OrderID, ItemID, Quantity))
+        print("Item added to order successfully!")
+
+def view_inventory_categories():
+    cursor = connection.cursor()
+    cursor.execute('SELECT DISTINCT ItemCategory FROM Inventory')
+
+    return cursor.fetchall()
+
+def view_inventory_by_category(ItemCategory):
+    cursor = connection.cursor()
+    cursor.execute(VIEW_INVENTORY_BY_CATEOGRY, (ItemCategory,))
+
+    return cursor.fetchall()
 
 def remove_order(removeID):
     try:
@@ -293,6 +311,11 @@ def viewManufacturers():
 
     return cursor.fetchall()
 
+def manufacturer_exists(ManufacturerID):
+    cursor = connection.cursor()
+    cursor.execute(MANUFACTURER_EXISTS_2, (ManufacturerID,))
+
+    return cursor.fetchall()
 
 def viewOrders():
     cursor = connection.cursor()
@@ -300,6 +323,11 @@ def viewOrders():
 
     return cursor.fetchall()
 
+def viewSpecificOrder(orderID):
+    cursor = connection.cursor()
+    cursor.execute(FETCH_ORDER_ITEMS, (orderID,))
+
+    return cursor.fetchall()
 
 def viewDeliveries():
     cursor = connection.cursor()

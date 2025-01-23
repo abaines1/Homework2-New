@@ -5,7 +5,8 @@ menu_prompt = """ --- Menu ---
 1. Inventory Menu
 2. Employee Menu
 3. Order Menu
-4. Log Off
+4. Delivery Menu
+5. Log Off
 """
 
 
@@ -14,31 +15,67 @@ def order_menu():
     menu = """ --- Order Menu --- \n
     1) Create Order
     2) Delete Order
-    3) View Orders
-    4) Go Back
+    3) View ALL Orders
+    4) View Specific Order (By ID)
+    5) Go Back
     """
 
-    while (user_input := input(menu)) != "4":
+    while (user_input := input(menu)) != "5":
         if user_input == "1":
-            DateOrdered = input("Input the date the order was placed: (mm-dd-yy)")
-            ManufacturerID = input("What is the manufacturer id? ")
-
-            database.create_order_and_delivery(DateOrdered, ManufacturerID)
-
+            try:
+                create_order()
+            except:
+                pass
+                
         elif user_input == "2":
             removeID = input("What is the ID of the Order you are trying to delete?")
             database.remove_order(removeID)
+
         elif user_input == "3":
             orders = database.viewOrders()
 
             if orders:
-                for orderID, dateOrdered, manufacturerID in orders:
-                    print(f"ID: {orderID} ||| Date Ordered: {dateOrdered} ||| ManufacturerID: {manufacturerID}")
+                for orderID, dateOrdered, employeeUserName in orders:
+                    print(f"OrderID: {orderID} ||| Date Ordered: {dateOrdered} ||| EmployeeUserName: {employeeUserName}")
             else: 
                 print("No orders found. Please add data to the database and retry")
-        else:
-            print('Error: Please input 4 to go back! ')
+            
+        elif user_input == "4":
+            orderID = input("What is the OrderID of the order you are looking for? ")
+            specificOrder = database.viewSpecificOrder(orderID)
 
+            for items in specificOrder:
+                print(f"OrderID: {orderID} ||| ItemID: {items[0]} ||| ItemQuantity: {items[1]}")
+
+
+        else:
+            print('Error: Please input 5 to go back! ')
+
+def create_order():
+    try:
+         # Set DateOrdered
+        DateOrdered = input("What is the date of the order? (mm-dd-yyyy) ")
+        if not re.match(r'\d{2}-\d{2}-\d{4}', DateOrdered):
+            print("Invalid date format. Please use mm-dd-yyyy")
+            return
+        
+        # Create Order
+        EmployeeUserName = input("What is the username of the employee who is creating the order? ")
+        if database.username_exists(EmployeeUserName):
+            orderID = database.create_order(DateOrdered, EmployeeUserName)
+        else:
+            print("Employee does not exist")
+            return
+        
+        # Add Items to Order_Items
+        while(user_input := input("Would you like to add items to the order? (Y/N) ").upper()) == "Y":
+            ItemID = input("What is the ItemID of the item you would like to add? ")
+            ItemQuantity = input("How many of this item would you like to add? ")
+
+            database.add_items_to_order(orderID, ItemID, ItemQuantity)
+
+    except:
+        pass
 # EMPLOYEE MENUS SECTION
 def employee_menu():
     employee_menu = """ --- Employee Menu ---
@@ -110,10 +147,11 @@ def inventory_menu():
     2) View In Stock Inventory
     3) View Out of Stock Inventory
     4) Search Inventory
-    5) Go Back
+    5) Update Inventory
+    6) Go Back
     """
 
-    while (user_input := input(menu)) != "5":
+    while (user_input := input(menu)) != "6":
         if user_input == "1":
             listTotalInventory()
         elif user_input == "2":
@@ -122,6 +160,8 @@ def inventory_menu():
             listOutStockInventory()
         elif user_input == "4":
             search_menu()
+        elif user_input == "5":
+            prompt_update_inventory()
         else:
             print('Error: Please input 5 to go back! ')
 
@@ -288,12 +328,14 @@ if __name__ == "__main__":
     # <-------- Main, program starts here.
     database.create_tables()
 
-    while (user_input := input(menu_prompt)) != "4":
+    while (user_input := input(menu_prompt)) != "5":
         if user_input == "1":
             inventory_menu()
         elif user_input == "2":
             employee_menu()
         elif user_input == "3":
             order_menu()
+        elif user_input == "4":
+            delivery_menu()
         else:
             print("Invalid Input. Try Again")
