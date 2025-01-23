@@ -1,4 +1,5 @@
 import database
+import re
 
 menu_prompt = """ --- Menu ---
 1. Inventory Menu
@@ -61,12 +62,36 @@ def employee_menu():
             print('Error: Please input 4 to go back! ')
 
 def add_employee():
-    EmpFirstName = input("What is your first name? ")
-    EmpLastName = input("What is your last name? ")
-    EmployeePhone = input("What is your phone number? ")
-    EmployeeUserName = input("What is your user name? ")
+    try:
+        EmpFirstName = input("What is your first name? ").strip()
+        if not EmpFirstName:
+            print("First name cannot be empty")
+            return
 
-    database.add_employee(EmpFirstName, EmpLastName, EmployeePhone, EmployeeUserName)
+        EmpLastName = input("What is your last name? ").strip()
+        if not EmpLastName:
+            print("Last name cannot be empty")
+            return
+
+        EmployeePhone = input("What is your phone number? ").strip()
+        if not re.match(r'^\d{3}-\d{3}-\d{4}$', EmployeePhone):
+            print("Invalid phone number format. Please use XXX-XXX-XXXX")
+            return
+
+        EmployeeUserName = input("What is your user name? ").strip()
+        if not EmployeeUserName:
+            print("Username cannot be empty")
+            return
+        
+        if database.username_exists(EmployeeUserName):
+            print("Username already exists")
+            return
+
+        # Add to database after all validations pass
+        database.add_employee(EmpFirstName, EmpLastName, EmployeePhone, EmployeeUserName)
+
+    except Exception as e:
+        print(f"Error: {e}")
 
 def listEmployees():
     employees = database.viewEmployees()
