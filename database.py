@@ -141,6 +141,12 @@ FROM Manufacturer
 WHERE ManufacturerName = ?
 '''
 
+USERNAME_EXISTS = '''
+SELECT EmployeeUserName
+FROM Employees
+WHERE EmployeeUserName = ?
+'''
+
 EMPLOYEE_CHECK = ''' SELECT COUNT(*) AS EMP
 FROM Employees
 '''
@@ -197,6 +203,11 @@ def add_employee(EmpFirstName, EmpLastName, EmpPhone, EmpUserName):
     with connection:
         connection.execute(ADD_EMPLOYEE, (EmpFirstName, EmpLastName, EmpPhone, EmpUserName))
 
+def username_exists(EmpUserName):
+    cursor = connection.cursor()
+    cursor.execute(USERNAME_EXISTS, (EmpUserName,))
+
+    return cursor.fetchall()
 
 def create_order_and_delivery(DateOrdered, ManufacturerID):
     try:
