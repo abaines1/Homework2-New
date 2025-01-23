@@ -225,7 +225,7 @@ def search_menu():
         elif user_input == "3":
             pass
         else:
-            print('Error: Please input 4 to go back! ')
+            print('Error: Please input a number between 1 and 3!')
 
 
 # DELIVERY MENUS SECTION
