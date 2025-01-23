@@ -1,29 +1,14 @@
 import database
 
 menu_prompt = """ --- Menu ---
-1) View Inventory
-2) Search Inventory
-3) Update Inventory
-4) Employee Information
-5) Manufacture Information
-6) Delivery Information
-7) Order Menu 
-8) Exit.
-
+1. Inventory Menu
+2. Employee Menu
+3. Order Menu
+4. Log Off
 """
 
 
-def prompt_add_item_and_manufacturer_delivery():
-    ItemName = input('What is the name of the item? ')
-    ItemCategory = input('Under what category does this item fall under? ')
-    ItemCost = float(input('What does each of the items cost? (per item) '))
-    ItemQuantity = int(input('How many of this item are we adding? '))
-    ManufacturerName = input('What is the name of the Manufacturer? ')
-
-    database.add_item_with_manufacturer(ItemName, ItemCategory, ItemCost, ItemQuantity,
-                                        ManufacturerName)
-
-
+# ORDER MENUS SECTION
 def order_menu():
     menu = """ --- Order Menu --- \n
     1) Create Order
@@ -53,39 +38,8 @@ def order_menu():
         else:
             print('Error: Please input 4 to go back! ')
 
-
-def add_employee_menu():
-    EmpFirstName = input("What is your first name? ")
-    EmpLastName = input("What is your last name? ")
-    EmployeePhone = input("What is your phone number? ")
-    EmployeeUserName = input("What is your user name? ")
-
-    database.add_employee(EmpFirstName, EmpLastName, EmployeePhone, EmployeeUserName)
-
-
-def prompt_update_inventory():
-    update_inv_prompt = """ --- Chose One of the Following ---
-    1) Add Items
-    2) Remove Items
-    3) Update Quantity of Item
-    4) Go Back
-    """
-
-    while (user_input := input(update_inv_prompt)) != "4":
-        if user_input == "1":
-            prompt_add_item_and_manufacturer_delivery()
-        elif user_input == "2":
-            ItemID = input("What is the ItemID you would like to delete? ")
-            database.remove_item(ItemID)
-        elif user_input == "3":
-            _id = input("What is the ID of the item you would like to update? ")
-            quantity = input("What is new quantity of the item? ")
-            database.updateItemStock(quantity, _id)
-        else:
-            print('Error: Please input 3 to go back! ')
-
-
-def prompt_employee_menu():
+# EMPLOYEE MENUS SECTION
+def employee_menu():
     employee_menu = """ --- Employee Menu ---
     1) View Employees
     2) Add Employee
@@ -97,7 +51,7 @@ def prompt_employee_menu():
         if user_input == "1":
             listEmployees()
         elif user_input == "2":
-            add_employee_menu()
+            add_employee()
         elif user_input == "3":
             EmployeeID = input('Please input the EmployeeID of the person you would like to remove: ')
             database.remove_employee(EmployeeID)
@@ -106,7 +60,25 @@ def prompt_employee_menu():
         else:
             print('Error: Please input 4 to go back! ')
 
+def add_employee():
+    EmpFirstName = input("What is your first name? ")
+    EmpLastName = input("What is your last name? ")
+    EmployeePhone = input("What is your phone number? ")
+    EmployeeUserName = input("What is your user name? ")
 
+    database.add_employee(EmpFirstName, EmpLastName, EmployeePhone, EmployeeUserName)
+
+def listEmployees():
+    employees = database.viewEmployees()
+
+    if employees:
+        for empID, firstName, lastName, phoneNumber, userName in employees:
+            print(f"EmployeeID: {empID} ||| First Name: {firstName} Last Name: {lastName} ||| Phone Number: {phoneNumber} ||| Username: {userName}")
+    else:
+        print("There are no employees. Add employees to the database before continuing.")
+
+
+# INVENTORY MENUS SECTION
 def inventory_menu():
     menu = """ --- Inventory Menu ---
     1) View Total Inventory (In and Out of Stock)
@@ -125,7 +97,73 @@ def inventory_menu():
         else:
             print('Error: Please input 4 to go back! ')
 
+## VIEW INVENTORY FUNCTIONS
+def listTotalInventory():
+    inventory = database.viewInventory()
 
+    if inventory:
+        for ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID, ManufacturerName, ManufacturerAddress, DayOfDelivery in inventory:
+            print(f"Item: {ItemName} ||| Category: {ItemCategory} ||| Item Cost: {ItemCost} ||| Quantity: {ItemQuantity} ||| "
+                f"\nManID: {ManufacturerID} ||| ManufacturerName: {ManufacturerName} ||| ManuAddress: {ManufacturerAddress} ||| Day of Delivery: {DayOfDelivery}")
+    else:
+        print("No inventory found. Please add data to the database and retry.")
+
+def listInStockInventory():
+    inStock = database.viewInStock()
+
+    if inStock:
+        for _id, ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID in inStock:
+            print(
+                f" --- Items In Stock ---- \n"
+                f"Item: {ItemName}  ||| Category: {ItemCategory} ||| Cost: {ItemCost}  ||| Quantity: {ItemQuantity} ||| ManufacturerID: {ManufacturerID} \n")
+    else:
+        print("No items in stock. Please add data to the database and retry.")
+
+def listOutStockInventory():
+    OutOfStock = database.viewOutOfStock()
+
+    if OutOfStock:
+        for _id, ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID in OutOfStock:
+            print(
+                f" --- Items Out of Stock ---- \n"
+                f"Item: {ItemName}  ||| Category: {ItemCategory} ||| Cost: {ItemCost}  ||| Quantity: {ItemQuantity} ||| ManufacturerID: {ManufacturerID} \n")
+    else:
+        print("No items currently out of stock.")
+
+### UPDATE INVENTORY FUNCTIONS
+def prompt_add_item_and_manufacturer_delivery():
+    ItemName = input('What is the name of the item? ')
+    ItemCategory = input('Under what category does this item fall under? ')
+    ItemCost = float(input('What does each of the items cost? (per item) '))
+    ItemQuantity = int(input('How many of this item are we adding? '))
+    ManufacturerName = input('What is the name of the Manufacturer? ')
+
+    database.add_item_with_manufacturer(ItemName, ItemCategory, ItemCost, ItemQuantity,
+                                        ManufacturerName)
+
+def prompt_update_inventory():
+
+    update_inv_prompt = """ --- Chose One of the Following ---
+    1) Add Items
+    2) Remove Items
+    3) Update Quantity of Item
+    4) Go Back
+    """
+
+    while (user_input := input(update_inv_prompt)) != "4":
+        if user_input == "1":
+            prompt_add_item_and_manufacturer_delivery()
+        elif user_input == "2":
+            ItemID = input("What is the ItemID you would like to delete? ")
+            database.remove_item(ItemID)
+        elif user_input == "3":
+            _id = input("What is the ID of the item you would like to update? ")
+            quantity = input("What is new quantity of the item? ")
+            database.updateItemStock(quantity, _id)
+        else:
+            print('Error: Please input 4 to go back! ')
+
+#### MANUFACTURER MENUS SECTION
 def manufacturer_menu():
     menu = """ --- Manufacture Information Menu ---
     1) View Manufacturers
@@ -143,7 +181,7 @@ def manufacturer_menu():
         else:
             print("Error")
 
-
+#### SEARCH INVENTORY SECTION
 def search_menu():
     menu = """ --- Search --- 
     1) Search By Name
@@ -187,6 +225,7 @@ def search_menu():
             print('Error: Please input 4 to go back! ')
 
 
+# DELIVERY MENUS SECTION
 def delivery_menu():
     menu = """ --- Delivery Menu ---
     1) View Deliveries
@@ -216,73 +255,17 @@ def delivery_menu():
             print('Error: Please input 3 to go back! ')
 
 
-# def listManufacturers():
-#     manufacturers = database.viewManufacturers()
-
-#     for _id, ManufacturerName, ManufacturerAddress, DayOfDelivery in manufacturers:
-#         print(f" --- Manufacturers --- "
-#               f"ID: {_id} ||| Name: {ManufacturerName} ||| Address: {ManufacturerAddress} ||| Day of Deliveries: {DayOfDelivery}")
-
-
-def listTotalInventory():
-    inventory = database.viewInventory()
-
-    if inventory:
-        for ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID, ManufacturerName, ManufacturerAddress, DayOfDelivery in inventory:
-            print(f"Item: {ItemName} ||| Category: {ItemCategory} ||| Item Cost: {ItemCost} ||| Quantity: {ItemQuantity} ||| "
-                f"\nManID: {ManufacturerID} ||| ManufacturerName: {ManufacturerName} ||| ManuAddress: {ManufacturerAddress} ||| Day of Delivery: {DayOfDelivery}")
-    else:
-        print("No inventory found. Please add data to the database and retry.")
-
-def listInStockInventory():
-    inStock = database.viewInStock()
-
-    if inStock:
-        for _id, ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID in inStock:
-            print(
-                f" --- Items In Stock ---- \n"
-                f"Item: {ItemName}  ||| Category: {ItemCategory} ||| Cost: {ItemCost}  ||| Quantity: {ItemQuantity} ||| ManufacturerID: {ManufacturerID} \n")
-    else:
-        print("No items in stock. Please add data to the database and retry.")
-
-def listOutStockInventory():
-    OutOfStock = database.viewOutOfStock()
-
-    if OutOfStock:
-        for _id, ItemName, ItemCategory, ItemCost, ItemQuantity, ManufacturerID in OutOfStock:
-            print(
-                f" --- Items In Stock ---- \n"
-                f"Item: {ItemName}  ||| Category: {ItemCategory} ||| Cost: {ItemCost}  ||| Quantity: {ItemQuantity} ||| ManufacturerID: {ManufacturerID} \n")
-    else:
-        print("No items currently out of stock.")
-
-def listEmployees():
-    employees = database.viewEmployees()
-
-    if employees:
-        for empID, firstName, lastName, phoneNumber, userName in employees:
-            print(f"EmployeeID: {empID} ||| First Name: {firstName} Last Name: {lastName} ||| Phone Number: {phoneNumber} ||| Username: {userName}")
-    else:
-        print("There are no employees. Add employees to the database before continuing.")
-
+# MAIN MENU FUNCTION
 if __name__ == "__main__":
     # <-------- Main, program starts here.
     database.create_tables()
 
-    while (user_input := input(menu_prompt)) != "8":
+    while (user_input := input(menu_prompt)) != "4":
         if user_input == "1":
             inventory_menu()
         elif user_input == "2":
-            search_menu()
+            employee_menu()
         elif user_input == "3":
-            prompt_update_inventory()
-        elif user_input == "4":
-            prompt_employee_menu()
-        elif user_input == "5":
-            manufacturer_menu()
-        elif user_input == "6":
-            delivery_menu()
-        elif user_input == "7":
             order_menu()
         else:
             print("Invalid Input. Try Again")
