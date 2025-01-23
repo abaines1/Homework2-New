@@ -83,19 +83,22 @@ def inventory_menu():
     menu = """ --- Inventory Menu ---
     1) View Total Inventory (In and Out of Stock)
     2) View In Stock Inventory
-    3) View Out of Stock Inventory 
-    4) Go Back
+    3) View Out of Stock Inventory
+    4) Search Inventory
+    5) Go Back
     """
 
-    while (user_input := input(menu)) != "4":
+    while (user_input := input(menu)) != "5":
         if user_input == "1":
             listTotalInventory()
         elif user_input == "2":
             listInStockInventory()
         elif user_input == "3":
             listOutStockInventory()
+        elif user_input == "4":
+            search_menu()
         else:
-            print('Error: Please input 4 to go back! ')
+            print('Error: Please input 5 to go back! ')
 
 ## VIEW INVENTORY FUNCTIONS
 def listTotalInventory():
@@ -188,7 +191,7 @@ def search_menu():
     2) Search By Category
     3) Go Back
     """
-    while (user_input := input(menu)) != "4":
+    while (user_input := input(menu)) != "3":
         if user_input == "1":
             searchName = database.searchByName(input('What is the name of the item you are searching for? '))
             print(searchName)
